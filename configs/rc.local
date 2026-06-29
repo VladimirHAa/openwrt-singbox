@@ -1,4 +1,4 @@
-# Bypass VPN for server IPs (must be BEFORE fwmark rule)
+# Bypass VPN for server IPs (priority 90, before fwmark 100)
 ip rule add to 46.8.233.202 lookup main priority 90
 ip rule add to 31.77.77.47 lookup main priority 90
 ip rule add to 94.126.153.10 lookup main priority 90

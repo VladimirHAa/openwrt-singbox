@@ -1,0 +1,10 @@
+chain mangle_prerouting {
+    type filter hook prerouting priority mangle; policy accept;
+    iifname "br-lan" meta nfproto ipv4 meta mark set 0x1
+}
+
+chain mangle_output {
+    type route hook output priority mangle; policy accept;
+    udp dport 53 meta mark set 0x1
+    tcp dport 53 meta mark set 0x1
+}

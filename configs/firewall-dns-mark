@@ -1,0 +1,3 @@
+#!/usr/sbin/nft -f
+add rule inet fw4 mangle_output udp dport 53 meta mark set 0x1
+add rule inet fw4 mangle_output tcp dport 53 meta mark set 0x1

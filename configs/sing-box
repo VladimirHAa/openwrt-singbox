@@ -1,0 +1,5 @@
+config sing-box 'main'
+	option enabled '1'
+	option user 'root'
+	option conffile '/etc/config/sing-box-config.json'
+	option workdir '/tmp'

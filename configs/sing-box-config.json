@@ -1,0 +1,128 @@
+{
+  "log": {
+    "level": "warn"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-remote",
+        "address": "tls://8.8.8.8",
+        "detour": "proxy"
+      },
+      {
+        "tag": "dns-direct",
+        "address": "tls://1.1.1.1",
+        "detour": "direct"
+      }
+    ],
+    "rules": [
+      {
+        "domain_suffix": [".ru", ".su"],
+        "server": "dns-direct"
+      },
+      {
+        "domain_suffix": ["protonam.com"],
+        "server": "dns-direct"
+      }
+    ],
+    "final": "dns-remote",
+    "strategy": "ipv4_only"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "interface_name": "tun0",
+      "domain_strategy": "ipv4_only",
+      "address": ["172.16.250.1/30"],
+      "auto_route": false,
+      "strict_route": false,
+      "sniff": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "hysteria2",
+      "tag": "hy2-vdska",
+      "server": "31.77.77.47",
+      "server_port": 9444,
+      "password": "<HY2_PASSWORD>",
+      "tls": {
+        "enabled": true,
+        "insecure": true,
+        "server_name": "www.oracle.com"
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "nj-vless",
+      "server": "46.8.233.202",
+      "server_port": 9443,
+      "uuid": "<UUID_NJ_VLESS>",
+      "flow": "xtls-rprx-vision",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.oracle.com",
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "<REALITY_PUBLIC_KEY>",
+          "short_id": "<SHORT_ID>"
+        }
+      }
+    },
+    {
+      "type": "urltest",
+      "tag": "proxy",
+      "outbounds": ["hy2-vdska", "nj-vless"],
+      "url": "https://cp.cloudflare.com/generate_204",
+      "interval": "1m",
+      "tolerance": 50,
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "ip_cidr": ["46.8.233.202/32"],
+        "outbound": "direct"
+      },
+      {
+        "ip_cidr": ["31.77.77.47/32"],
+        "outbound": "direct"
+      },
+      {
+        "ip_cidr": ["94.126.153.10/32"],
+        "outbound": "direct"
+      },
+      {
+        "domain_suffix": ["protonam.com"],
+        "outbound": "direct"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "domain_suffix": [".ru", ".su"],
+        "outbound": "direct"
+      },
+      {
+        "protocol": "dns",
+        "outbound": "dns-out"
+      }
+    ],
+    "final": "proxy",
+    "auto_detect_interface": true
+  }
+}
